@@ -31,6 +31,9 @@ public class Task {
         this.startDate = startDate;
         this.dueDate = dueDate;
     }
+    public String getId() {
+        return id;
+    }
     public TaskStatus getStatus() {
         return status;
     }
