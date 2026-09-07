@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DependencyGraphTest {
 
@@ -84,22 +86,18 @@ class DependencyGraphTest {
 
         DependencyGraph graph = new DependencyGraph();
 
-        // TASK-002 depends on TASK-001
         graph.addDependency(
                 new TaskDependency("TASK-002", "TASK-001")
         );
 
-        // TASK-003 depends on TASK-001
         graph.addDependency(
                 new TaskDependency("TASK-003", "TASK-001")
         );
 
-        // TASK-004 depends on TASK-002
         graph.addDependency(
                 new TaskDependency("TASK-004", "TASK-002")
         );
 
-        // TASK-004 also depends on TASK-003
         graph.addDependency(
                 new TaskDependency("TASK-004", "TASK-003")
         );
@@ -111,5 +109,85 @@ class DependencyGraphTest {
                 Set.of("TASK-002", "TASK-003", "TASK-004"),
                 affectedTasks
         );
+    }
+
+    @Test
+    void graphShouldNotDetectCycleInValidChain() {
+
+        DependencyGraph graph = new DependencyGraph();
+
+        graph.addDependency(
+                new TaskDependency("TASK-002", "TASK-001")
+        );
+
+        graph.addDependency(
+                new TaskDependency("TASK-003", "TASK-002")
+        );
+
+        graph.addDependency(
+                new TaskDependency("TASK-004", "TASK-003")
+        );
+
+        assertFalse(graph.hasCircularDependency());
+    }
+
+    @Test
+    void graphShouldDetectSimpleCircularDependency() {
+
+        DependencyGraph graph = new DependencyGraph();
+
+        graph.addDependency(
+                new TaskDependency("TASK-002", "TASK-001")
+        );
+
+        graph.addDependency(
+                new TaskDependency("TASK-001", "TASK-002")
+        );
+
+        assertTrue(graph.hasCircularDependency());
+    }
+
+    @Test
+    void graphShouldDetectThreeTaskCircularDependency() {
+
+        DependencyGraph graph = new DependencyGraph();
+
+        graph.addDependency(
+                new TaskDependency("TASK-002", "TASK-001")
+        );
+
+        graph.addDependency(
+                new TaskDependency("TASK-003", "TASK-002")
+        );
+
+        graph.addDependency(
+                new TaskDependency("TASK-001", "TASK-003")
+        );
+
+        assertTrue(graph.hasCircularDependency());
+    }
+
+    @Test
+    void graphShouldNotDetectCycleInBranchingGraph() {
+
+        DependencyGraph graph = new DependencyGraph();
+
+        graph.addDependency(
+                new TaskDependency("TASK-002", "TASK-001")
+        );
+
+        graph.addDependency(
+                new TaskDependency("TASK-003", "TASK-001")
+        );
+
+        graph.addDependency(
+                new TaskDependency("TASK-004", "TASK-002")
+        );
+
+        graph.addDependency(
+                new TaskDependency("TASK-004", "TASK-003")
+        );
+
+        assertFalse(graph.hasCircularDependency());
     }
 }
