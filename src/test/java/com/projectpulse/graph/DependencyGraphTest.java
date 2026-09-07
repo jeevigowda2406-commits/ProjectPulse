@@ -48,4 +48,29 @@ class DependencyGraphTest {
                 affectedTasks
         );
     }
+    @Test
+    void graphShouldFindAllDownstreamAffectedTasks() {
+
+        DependencyGraph graph = new DependencyGraph();
+
+        graph.addDependency(
+                new TaskDependency("TASK-002", "TASK-001")
+        );
+
+        graph.addDependency(
+                new TaskDependency("TASK-003", "TASK-002")
+        );
+
+        graph.addDependency(
+                new TaskDependency("TASK-004", "TASK-003")
+        );
+
+        Set<String> affectedTasks =
+                graph.findAllAffectedTasks("TASK-001");
+
+        assertEquals(
+                Set.of("TASK-002", "TASK-003", "TASK-004"),
+                affectedTasks
+        );
+    }
 }

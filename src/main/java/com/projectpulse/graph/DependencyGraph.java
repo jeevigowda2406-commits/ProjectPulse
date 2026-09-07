@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
-
+import java.util.LinkedList;
+import java.util.Queue;
 public class DependencyGraph {
 
     private final List<TaskDependency> dependencies;
@@ -30,6 +31,30 @@ public class DependencyGraph {
 
             if (dependency.getDependsOnTaskId().equals(taskId)) {
                 affectedTasks.add(dependency.getTaskId());
+            }
+        }
+
+        return affectedTasks;
+    }
+    public Set<String> findAllAffectedTasks(String taskId) {
+
+        Set<String> affectedTasks = new HashSet<>();
+        Queue<String> tasksToProcess = new LinkedList<>();
+
+        tasksToProcess.add(taskId);
+
+        while (!tasksToProcess.isEmpty()) {
+
+            String currentTask = tasksToProcess.poll();
+
+            Set<String> directlyAffected =
+                    findDirectlyAffectedTasks(currentTask);
+
+            for (String affectedTask : directlyAffected) {
+
+                if (affectedTasks.add(affectedTask)) {
+                    tasksToProcess.add(affectedTask);
+                }
             }
         }
 
